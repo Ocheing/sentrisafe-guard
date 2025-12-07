@@ -14,18 +14,8 @@ const Dashboard = () => {
   const [evidenceCount, setEvidenceCount] = useState(0);
 
   useEffect(() => {
-    checkAuth();
     fetchDashboardData();
   }, []);
-
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/auth");
-      return;
-    }
-    setUser(session.user);
-  };
 
   const fetchDashboardData = async () => {
     const { data: alertsData } = await supabase

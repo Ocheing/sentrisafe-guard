@@ -22,16 +22,8 @@ const Evidence = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    checkAuth();
     fetchEvidence();
   }, []);
-
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/auth");
-    }
-  };
 
   const fetchEvidence = async () => {
     const { data, error } = await supabase

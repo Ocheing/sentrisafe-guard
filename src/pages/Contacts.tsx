@@ -27,16 +27,8 @@ const Contacts = () => {
   });
 
   useEffect(() => {
-    checkAuth();
     fetchContacts();
   }, []);
-
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/auth");
-    }
-  };
 
   const fetchContacts = async () => {
     const { data } = await supabase

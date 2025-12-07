@@ -24,16 +24,8 @@ const Settings = () => {
   });
 
   useEffect(() => {
-    checkAuth();
     fetchProfile();
   }, []);
-
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/auth");
-    }
-  };
 
   const fetchProfile = async () => {
     const { data: { user } } = await supabase.auth.getUser();
