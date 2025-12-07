@@ -4,13 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Shield, Scan, FileText, MessageSquare, Users, AlertTriangle } from "lucide-react";
+import Footer from "@/components/Footer";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const Index = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         navigate("/dashboard");
@@ -31,120 +32,120 @@ const Index = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-muted-foreground">Loading...</div>
+        <div className="text-muted-foreground text-sm">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center">
-              <Shield className="w-7 h-7 text-primary-foreground" />
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center">
+              <Shield className="w-5 h-5 text-primary-foreground" />
             </div>
-            <h1 className="text-2xl font-bold text-primary">SentriSafe</h1>
+            <h1 className="text-xl font-bold text-primary">SentriSafe</h1>
           </div>
-          <Button onClick={() => navigate("/auth")} className="bg-primary hover:bg-primary/90">
-            Get Started
-          </Button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button onClick={() => navigate("/auth")} size="sm" className="bg-primary hover:bg-primary/90">
+              Get Started
+            </Button>
+          </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-16 text-center max-w-4xl">
-        <div className="mb-8">
-          <div className="inline-block mb-6">
-            <div className="w-24 h-24 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto">
-              <Shield className="w-14 h-14 text-primary" />
+      <section className="container mx-auto px-4 py-12 text-center max-w-3xl">
+        <div className="mb-6">
+          <div className="inline-block mb-4">
+            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto">
+              <Shield className="w-10 h-10 text-primary" />
             </div>
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             Your Digital Safety Guardian
           </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            AI-powered protection against online violence. Real-time detection, secure evidence storage, and emergency support for women and girls.
+          <p className="text-base text-muted-foreground mb-6 max-w-xl mx-auto">
+            AI-powered protection against online violence. Real-time detection, secure evidence storage, and emergency support.
           </p>
-          <div className="flex gap-4 justify-center">
-            <Button
-              onClick={() => navigate("/auth")}
-              size="lg"
-              className="bg-primary hover:bg-primary/90 text-lg h-14 px-8"
-            >
-              Start Protecting Yourself
-            </Button>
-          </div>
+          <Button
+            onClick={() => navigate("/auth")}
+            size="default"
+            className="bg-primary hover:bg-primary/90 h-10 px-6"
+          >
+            Start Protecting Yourself
+          </Button>
         </div>
-
-        <p className="text-sm text-primary font-semibold italic mt-8">
+        <p className="text-xs text-primary font-semibold italic">
           "Safety is not optional — it is designed."
         </p>
       </section>
 
       {/* Features Grid */}
-      <section className="container mx-auto px-4 py-16 max-w-6xl">
-        <h2 className="text-3xl font-bold text-center mb-12 text-foreground">
+      <section className="container mx-auto px-4 py-10 max-w-5xl flex-1">
+        <h2 className="text-2xl font-bold text-center mb-8 text-foreground">
           Complete Protection Suite
         </h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="border-2 hover:shadow-lg transition-shadow">
-            <CardContent className="pt-6">
-              <Scan className="w-12 h-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-3 text-foreground">AI Detection</h3>
-              <p className="text-muted-foreground">
-                Scan messages before viewing. Detect harassment, threats, grooming, and more with advanced AI.
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Card className="border hover:shadow-md transition-shadow">
+            <CardContent className="pt-4 pb-4">
+              <Scan className="w-8 h-8 text-primary mb-2" />
+              <h3 className="text-base font-semibold mb-1 text-foreground">AI Detection</h3>
+              <p className="text-xs text-muted-foreground">
+                Detect harassment, threats, grooming, and more with advanced AI.
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:shadow-lg transition-shadow">
-            <CardContent className="pt-6">
-              <FileText className="w-12 h-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-3 text-foreground">Evidence Vault</h3>
-              <p className="text-muted-foreground">
-                Securely store harmful content with encrypted protection. Export for legal purposes when needed.
+          <Card className="border hover:shadow-md transition-shadow">
+            <CardContent className="pt-4 pb-4">
+              <FileText className="w-8 h-8 text-primary mb-2" />
+              <h3 className="text-base font-semibold mb-1 text-foreground">Evidence Vault</h3>
+              <p className="text-xs text-muted-foreground">
+                Securely store harmful content with encrypted protection.
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:shadow-lg transition-shadow">
-            <CardContent className="pt-6">
-              <AlertTriangle className="w-12 h-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-3 text-foreground">SOS Emergency</h3>
-              <p className="text-muted-foreground">
-                One-tap alert system notifies your trusted contacts instantly in dangerous situations.
+          <Card className="border hover:shadow-md transition-shadow">
+            <CardContent className="pt-4 pb-4">
+              <AlertTriangle className="w-8 h-8 text-primary mb-2" />
+              <h3 className="text-base font-semibold mb-1 text-foreground">SOS Emergency</h3>
+              <p className="text-xs text-muted-foreground">
+                One-tap alert notifies your trusted contacts instantly.
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:shadow-lg transition-shadow">
-            <CardContent className="pt-6">
-              <MessageSquare className="w-12 h-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-3 text-foreground">Safety Coach</h3>
-              <p className="text-muted-foreground">
-                AI-powered guidance on digital safety, cyberbullying prevention, and online protection strategies.
+          <Card className="border hover:shadow-md transition-shadow">
+            <CardContent className="pt-4 pb-4">
+              <MessageSquare className="w-8 h-8 text-primary mb-2" />
+              <h3 className="text-base font-semibold mb-1 text-foreground">Safety Coach</h3>
+              <p className="text-xs text-muted-foreground">
+                AI-powered guidance on digital safety strategies.
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:shadow-lg transition-shadow">
-            <CardContent className="pt-6">
-              <Users className="w-12 h-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-3 text-foreground">Safe Circle</h3>
-              <p className="text-muted-foreground">
-                Build your trusted network. Add contacts who will be alerted during emergencies.
+          <Card className="border hover:shadow-md transition-shadow">
+            <CardContent className="pt-4 pb-4">
+              <Users className="w-8 h-8 text-primary mb-2" />
+              <h3 className="text-base font-semibold mb-1 text-foreground">Safe Circle</h3>
+              <p className="text-xs text-muted-foreground">
+                Build your trusted network for emergency alerts.
               </p>
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:shadow-lg transition-shadow">
-            <CardContent className="pt-6">
-              <Shield className="w-12 h-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-3 text-foreground">Real-time Protection</h3>
-              <p className="text-muted-foreground">
-                Monitor your safety score and get instant alerts about potential threats in your messages.
+          <Card className="border hover:shadow-md transition-shadow">
+            <CardContent className="pt-4 pb-4">
+              <Shield className="w-8 h-8 text-primary mb-2" />
+              <h3 className="text-base font-semibold mb-1 text-foreground">Real-time Protection</h3>
+              <p className="text-xs text-muted-foreground">
+                Monitor your safety score and get instant alerts.
               </p>
             </CardContent>
           </Card>
@@ -152,87 +153,49 @@ const Index = () => {
       </section>
 
       {/* How It Works */}
-      <section className="bg-muted/30 py-16">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <h2 className="text-3xl font-bold text-center mb-12 text-foreground">
+      <section className="bg-muted/30 py-10">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <h2 className="text-2xl font-bold text-center mb-8 text-foreground">
             How SentriSafe Works
           </h2>
-          <div className="space-y-8">
-            <div className="flex gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-xl">
-                1
+          <div className="grid md:grid-cols-2 gap-4">
+            {[
+              { num: "1", title: "Scan Messages", desc: "Analyze messages for harmful content before viewing." },
+              { num: "2", title: "Get Alerts", desc: "Receive risk scores and detailed categorization." },
+              { num: "3", title: "Save Evidence", desc: "Store harmful content securely in your vault." },
+              { num: "4", title: "Stay Protected", desc: "Use SOS alerts and AI coach for ongoing protection." },
+            ].map((step) => (
+              <div key={step.num} className="flex gap-3 bg-card p-4 rounded-lg border">
+                <div className="flex-shrink-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-sm">
+                  {step.num}
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold mb-1 text-foreground">{step.title}</h3>
+                  <p className="text-xs text-muted-foreground">{step.desc}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2 text-foreground">Scan Messages</h3>
-                <p className="text-muted-foreground">
-                  Paste or upload messages to analyze them for harmful content before viewing. Our AI checks for multiple threat types.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-xl">
-                2
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2 text-foreground">Get Instant Alerts</h3>
-                <p className="text-muted-foreground">
-                  Receive risk scores and detailed categorization. Know exactly what type of threat you're dealing with.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-xl">
-                3
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2 text-foreground">Save Evidence</h3>
-                <p className="text-muted-foreground">
-                  Store harmful content securely in your encrypted vault. Export when needed for reporting or legal purposes.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-xl">
-                4
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2 text-foreground">Stay Protected</h3>
-                <p className="text-muted-foreground">
-                  Use SOS alerts, get AI coach guidance, and maintain your safe contact circle for ongoing protection.
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="container mx-auto px-4 py-16 text-center max-w-3xl">
-        <h2 className="text-4xl font-bold mb-6 text-foreground">
-          Ready to Take Control of Your Digital Safety?
+      <section className="container mx-auto px-4 py-10 text-center max-w-2xl">
+        <h2 className="text-2xl font-bold mb-4 text-foreground">
+          Ready to Take Control?
         </h2>
-        <p className="text-xl text-muted-foreground mb-8">
-          Join SentriSafe today and experience peace of mind online. Free to start, always protecting.
+        <p className="text-sm text-muted-foreground mb-6">
+          Join SentriSafe today and experience peace of mind online.
         </p>
         <Button
           onClick={() => navigate("/auth")}
-          size="lg"
-          className="bg-primary hover:bg-primary/90 text-lg h-14 px-8"
+          className="bg-primary hover:bg-primary/90 h-10 px-6"
         >
           Create Your Account
         </Button>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border bg-card py-8">
-        <div className="container mx-auto px-4 text-center text-muted-foreground">
-          <p className="mb-2">© 2025 SentriSafe. All rights reserved.</p>
-          <p className="text-sm">Protecting women and girls from online violence with AI.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
