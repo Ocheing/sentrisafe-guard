@@ -42,9 +42,9 @@ const Footer = () => {
 
           {/* Support */}
           <div>
-            <h4 className="font-semibold text-foreground mb-3 text-sm">Support</h4>
+            <h4 className="font-semibold text-foreground mb-3 text-sm">Company</h4>
             <ul className="space-y-2 text-xs text-muted-foreground">
-              <li><a href="#" className="hover:text-primary transition-colors">Help Center</a></li>
+              <li><Link to="/about" className="hover:text-primary transition-colors">About Us</Link></li>
               <li><a href="#" className="hover:text-primary transition-colors">Privacy Policy</a></li>
               <li><a href="#" className="hover:text-primary transition-colors">Terms of Service</a></li>
             </ul>
