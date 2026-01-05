@@ -1,18 +1,37 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Shield, AlertTriangle, FileText, MessageSquare, Users, Settings, LogOut, Scan, ArrowLeft } from "lucide-react";
-import { toast } from "sonner";
-import ThemeToggle from "@/components/ThemeToggle";
+import { AlertTriangle, FileText, MessageSquare, Users, Settings, LogOut, Scan } from "lucide-react";
+import { useSOS } from "@/contexts/SOSContext";
+import { useShakeDetection } from "@/hooks/useShakeDetection";
+import { useKeyboardSOS } from "@/hooks/useKeyboardSOS";
+import DisguisedHeader from "@/components/DisguisedHeader";
+import Footer from "@/components/Footer";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
   const [safetyScore, setSafetyScore] = useState(85);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [evidenceCount, setEvidenceCount] = useState(0);
+  const { activateSOS } = useSOS();
+
+  // Shake detection for SOS
+  useShakeDetection({
+    threshold: 20,
+    onShake: () => {
+      activateSOS();
+    },
+  });
+
+  // Keyboard SOS (type "sos")
+  useKeyboardSOS({
+    pattern: ['s', 'o', 's'],
+    onSOS: () => {
+      activateSOS();
+    },
+  });
 
   useEffect(() => {
     fetchDashboardData();
@@ -33,79 +52,29 @@ const Dashboard = () => {
     setEvidenceCount(count || 0);
   };
 
-  const handleSOS = async () => {
-    toast.success("SOS alert sent to your trusted contacts!");
-    // Create an alert
-    await supabase.from("safety_alerts").insert({
-      alert_type: "sos",
-      message: "Emergency SOS activated",
-      risk_level: "critical",
-      user_id: user?.id,
-    });
-  };
-
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/auth");
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" asChild className="rounded-full">
-              <Link to="/">
-                <ArrowLeft className="w-5 h-5" />
-              </Link>
-            </Button>
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-              <Shield className="w-6 h-6 text-primary-foreground" />
-            </div>
-            <h1 className="text-2xl font-bold text-primary">SentriSafe</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => navigate("/settings")}
-              className="rounded-full"
-            >
-              <Settings className="w-5 h-5" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleLogout}
-              className="rounded-full"
-            >
-              <LogOut className="w-5 h-5" />
-            </Button>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background flex flex-col">
+      <DisguisedHeader showBack backTo="/" />
 
-      <main className="container mx-auto px-4 py-8 max-w-6xl">
+      <main className="container mx-auto px-4 py-6 max-w-4xl flex-1">
         {/* Safety Score */}
-        <Card className="mb-6 border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="w-6 h-6 text-primary" />
-              Safety Score
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        <Card className="mb-4 border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5">
+          <CardContent className="pt-4 pb-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-5xl font-bold text-primary">{safetyScore}</div>
-                <p className="text-muted-foreground mt-1">Your digital safety is strong</p>
+                <p className="text-xs text-muted-foreground mb-1">Safety Score</p>
+                <div className="text-4xl font-bold text-primary">{safetyScore}%</div>
+                <p className="text-xs text-muted-foreground mt-1">Your digital safety is strong</p>
               </div>
-              <div className="w-32 h-32 rounded-full border-8 border-primary/20 flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full border-4 border-primary/20 flex items-center justify-center bg-primary/5">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{safetyScore}%</div>
-                  <div className="text-xs text-muted-foreground">Protected</div>
+                  <div className="text-lg font-bold text-primary">{safetyScore}</div>
+                  <div className="text-[10px] text-muted-foreground">Protected</div>
                 </div>
               </div>
             </div>
@@ -113,91 +82,90 @@ const Dashboard = () => {
         </Card>
 
         {/* Quick Actions */}
-        <div className="grid md:grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-2 gap-3 mb-4">
           <Button
             onClick={() => navigate("/detection")}
             size="lg"
-            className="h-24 bg-primary hover:bg-primary/90 text-primary-foreground"
+            className="h-16 bg-primary hover:bg-primary/90 text-primary-foreground text-sm"
           >
-            <Scan className="w-6 h-6 mr-3" />
-            <span className="text-lg font-semibold">Scan Messages</span>
+            <Scan className="w-5 h-5 mr-2" />
+            Scan Messages
           </Button>
           <Button
-            onClick={handleSOS}
+            onClick={() => activateSOS()}
             size="lg"
             variant="destructive"
-            className="h-24"
+            className="h-16 text-sm"
           >
-            <AlertTriangle className="w-6 h-6 mr-3" />
-            <span className="text-lg font-semibold">SOS Emergency</span>
+            <AlertTriangle className="w-5 h-5 mr-2" />
+            SOS Emergency
           </Button>
         </div>
 
         {/* Navigation Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 gap-3 mb-4">
           <Card
-            className="cursor-pointer hover:shadow-lg transition-shadow border-2"
+            className="cursor-pointer hover:shadow-md transition-shadow"
             onClick={() => navigate("/evidence")}
           >
-            <CardHeader>
-              <FileText className="w-8 h-8 text-primary mb-2" />
-              <CardTitle className="text-lg">Evidence Vault</CardTitle>
-              <CardDescription>{evidenceCount} items stored</CardDescription>
+            <CardHeader className="pb-2 pt-3 px-3">
+              <FileText className="w-6 h-6 text-primary mb-1" />
+              <CardTitle className="text-sm">Evidence Vault</CardTitle>
+              <CardDescription className="text-xs">{evidenceCount} items</CardDescription>
             </CardHeader>
           </Card>
 
           <Card
-            className="cursor-pointer hover:shadow-lg transition-shadow border-2"
+            className="cursor-pointer hover:shadow-md transition-shadow"
             onClick={() => navigate("/coach")}
           >
-            <CardHeader>
-              <MessageSquare className="w-8 h-8 text-primary mb-2" />
-              <CardTitle className="text-lg">Safety Coach</CardTitle>
-              <CardDescription>Get AI guidance</CardDescription>
+            <CardHeader className="pb-2 pt-3 px-3">
+              <MessageSquare className="w-6 h-6 text-primary mb-1" />
+              <CardTitle className="text-sm">Safety Coach</CardTitle>
+              <CardDescription className="text-xs">AI guidance</CardDescription>
             </CardHeader>
           </Card>
 
           <Card
-            className="cursor-pointer hover:shadow-lg transition-shadow border-2"
+            className="cursor-pointer hover:shadow-md transition-shadow"
             onClick={() => navigate("/contacts")}
           >
-            <CardHeader>
-              <Users className="w-8 h-8 text-primary mb-2" />
-              <CardTitle className="text-lg">Safe Circle</CardTitle>
-              <CardDescription>Trusted contacts</CardDescription>
+            <CardHeader className="pb-2 pt-3 px-3">
+              <Users className="w-6 h-6 text-primary mb-1" />
+              <CardTitle className="text-sm">Safe Circle</CardTitle>
+              <CardDescription className="text-xs">Trusted contacts</CardDescription>
             </CardHeader>
           </Card>
 
           <Card
-            className="cursor-pointer hover:shadow-lg transition-shadow border-2"
-            onClick={() => navigate("/detection")}
+            className="cursor-pointer hover:shadow-md transition-shadow"
+            onClick={() => navigate("/settings")}
           >
-            <CardHeader>
-              <Scan className="w-8 h-8 text-primary mb-2" />
-              <CardTitle className="text-lg">Detect Abuse</CardTitle>
-              <CardDescription>Scan messages now</CardDescription>
+            <CardHeader className="pb-2 pt-3 px-3">
+              <Settings className="w-6 h-6 text-primary mb-1" />
+              <CardTitle className="text-sm">Settings</CardTitle>
+              <CardDescription className="text-xs">Safety options</CardDescription>
             </CardHeader>
           </Card>
         </div>
 
         {/* Recent Alerts */}
-        <Card className="border-2">
-          <CardHeader>
-            <CardTitle>Recent Alerts</CardTitle>
-            <CardDescription>Your latest safety notifications</CardDescription>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Recent Alerts</CardTitle>
           </CardHeader>
           <CardContent>
             {alerts.length > 0 ? (
-              <div className="space-y-3">
-                {alerts.map((alert) => (
+              <div className="space-y-2">
+                {alerts.slice(0, 3).map((alert) => (
                   <div
                     key={alert.id}
-                    className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 border border-border"
+                    className="flex items-start gap-2 p-2 rounded-lg bg-muted/50 border border-border"
                   >
-                    <AlertTriangle className="w-5 h-5 text-warning mt-0.5" />
-                    <div className="flex-1">
-                      <div className="font-medium text-foreground">{alert.message}</div>
-                      <div className="text-sm text-muted-foreground mt-1">
+                    <AlertTriangle className="w-4 h-4 text-warning mt-0.5 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-medium text-foreground truncate">{alert.message}</div>
+                      <div className="text-[10px] text-muted-foreground">
                         {new Date(alert.created_at).toLocaleDateString()}
                       </div>
                     </div>
@@ -205,13 +173,22 @@ const Dashboard = () => {
                 ))}
               </div>
             ) : (
-              <p className="text-center text-muted-foreground py-8">
+              <p className="text-center text-muted-foreground py-4 text-xs">
                 No recent alerts. You're safe! 🛡️
               </p>
             )}
           </CardContent>
         </Card>
+
+        {/* Quick tip about SOS */}
+        <div className="mt-4 p-3 bg-muted/50 rounded-lg border">
+          <p className="text-xs text-muted-foreground text-center">
+            💡 <strong>Tip:</strong> Shake your phone or type "SOS" to activate emergency mode
+          </p>
+        </div>
       </main>
+
+      <Footer />
     </div>
   );
 };
