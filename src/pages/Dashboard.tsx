@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Shield, AlertTriangle, FileText, MessageSquare, Users, Settings, LogOut, Scan } from "lucide-react";
+import { Shield, AlertTriangle, FileText, MessageSquare, Users, Settings, LogOut, Scan, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -54,12 +55,18 @@ const Dashboard = () => {
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" asChild className="rounded-full">
+              <Link to="/">
+                <ArrowLeft className="w-5 h-5" />
+              </Link>
+            </Button>
             <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
               <Shield className="w-6 h-6 text-primary-foreground" />
             </div>
             <h1 className="text-2xl font-bold text-primary">SentriSafe</h1>
           </div>
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Button
               variant="outline"
               size="icon"
