@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, FileText, MessageSquare, Users, Settings, LogOut, Scan } from "lucide-react";
+import { AlertTriangle, FileText, MessageSquare, Users, Settings, Scan } from "lucide-react";
 import { useSOS } from "@/contexts/SOSContext";
 import { useShakeDetection } from "@/hooks/useShakeDetection";
 import { useKeyboardSOS } from "@/hooks/useKeyboardSOS";
@@ -15,21 +15,25 @@ const Dashboard = () => {
   const [safetyScore, setSafetyScore] = useState(85);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [evidenceCount, setEvidenceCount] = useState(0);
-  const { activateSOS } = useSOS();
+  const { activateSOS, settings } = useSOS();
 
-  // Shake detection for SOS
+  // Shake detection for SOS (only if enabled)
   useShakeDetection({
     threshold: 20,
     onShake: () => {
-      activateSOS();
+      if (settings.shake_sos_enabled) {
+        activateSOS('shake');
+      }
     },
   });
 
-  // Keyboard SOS (type "sos")
+  // Keyboard SOS (type "sos") - only if enabled
   useKeyboardSOS({
     pattern: ['s', 'o', 's'],
     onSOS: () => {
-      activateSOS();
+      if (settings.keyboard_sos_enabled) {
+        activateSOS('keyboard');
+      }
     },
   });
 

@@ -32,6 +32,9 @@ const SelfDestructButton = () => {
           supabase.from('coach_conversations').delete().eq('user_id', user.id),
           supabase.from('safety_alerts').delete().eq('user_id', user.id),
           supabase.from('trusted_contacts').delete().eq('user_id', user.id),
+          supabase.from('prewritten_messages').delete().eq('user_id', user.id),
+          supabase.from('user_settings').delete().eq('user_id', user.id),
+          supabase.from('sos_events').delete().eq('user_id', user.id),
         ]);
       }
 

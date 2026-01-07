@@ -68,6 +68,30 @@ export type Database = {
         }
         Relationships: []
       }
+      prewritten_messages: {
+        Row: {
+          created_at: string
+          id: string
+          is_default: boolean
+          message: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          message: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          message?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -122,6 +146,42 @@ export type Database = {
         }
         Relationships: []
       }
+      sos_events: {
+        Row: {
+          contacts_notified: string[] | null
+          created_at: string
+          id: string
+          latitude: number | null
+          longitude: number | null
+          message_sent: string | null
+          recording_url: string | null
+          trigger_type: string
+          user_id: string
+        }
+        Insert: {
+          contacts_notified?: string[] | null
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          message_sent?: string | null
+          recording_url?: string | null
+          trigger_type: string
+          user_id: string
+        }
+        Update: {
+          contacts_notified?: string[] | null
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          message_sent?: string | null
+          recording_url?: string | null
+          trigger_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       trusted_contacts: {
         Row: {
           contact_email: string | null
@@ -145,6 +205,42 @@ export type Database = {
           contact_phone?: string | null
           created_at?: string | null
           id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_settings: {
+        Row: {
+          auto_location_enabled: boolean
+          auto_recording_enabled: boolean
+          created_at: string
+          disguise_mode: string
+          id: string
+          keyboard_sos_enabled: boolean
+          shake_sos_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_location_enabled?: boolean
+          auto_recording_enabled?: boolean
+          created_at?: string
+          disguise_mode?: string
+          id?: string
+          keyboard_sos_enabled?: boolean
+          shake_sos_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_location_enabled?: boolean
+          auto_recording_enabled?: boolean
+          created_at?: string
+          disguise_mode?: string
+          id?: string
+          keyboard_sos_enabled?: boolean
+          shake_sos_enabled?: boolean
+          updated_at?: string
           user_id?: string
         }
         Relationships: []

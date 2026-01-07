@@ -19,28 +19,22 @@ import DisguiseSelector from "@/components/DisguiseSelector";
 import PrewrittenMessagesManager from "@/components/PrewrittenMessagesManager";
 import SelfDestructButton from "@/components/SelfDestructButton";
 import { useDisguise } from "@/contexts/DisguiseContext";
+import { useSOS } from "@/contexts/SOSContext";
 
 const Settings = () => {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const { isDisguised, appName } = useDisguise();
+  const { settings, updateSettings, loading: sosLoading } = useSOS();
   const [profile, setProfile] = useState({ name: "", email: "" });
   const [loading, setLoading] = useState(false);
-  const [settings, setSettings] = useState({
-    shakeToSOS: true,
-    keyboardSOS: true,
-    autoLocation: true,
-    autoRecording: true,
-    notifications: {
-      email: true,
-      push: true,
-      sms: false,
-    },
+  const [notifications, setNotifications] = useState({
+    email: true,
+    push: true,
   });
 
   useEffect(() => {
     fetchProfile();
-    loadSettings();
   }, []);
 
   const fetchProfile = async () => {
@@ -50,24 +44,12 @@ const Settings = () => {
         .from("profiles")
         .select("*")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
       if (data) {
         setProfile({ name: data.name, email: data.email });
       }
     }
-  };
-
-  const loadSettings = () => {
-    const stored = localStorage.getItem('sentrisafe_settings');
-    if (stored) {
-      setSettings(JSON.parse(stored));
-    }
-  };
-
-  const saveSettings = (newSettings: typeof settings) => {
-    setSettings(newSettings);
-    localStorage.setItem('sentrisafe_settings', JSON.stringify(newSettings));
   };
 
   const updateProfile = async () => {
@@ -139,8 +121,9 @@ const Settings = () => {
                     </div>
                   </div>
                   <Switch
-                    checked={settings.shakeToSOS}
-                    onCheckedChange={(checked) => saveSettings({ ...settings, shakeToSOS: checked })}
+                    checked={settings.shake_sos_enabled}
+                    onCheckedChange={(checked) => updateSettings({ shake_sos_enabled: checked })}
+                    disabled={sosLoading}
                   />
                 </div>
                 <Separator />
@@ -153,8 +136,9 @@ const Settings = () => {
                     </div>
                   </div>
                   <Switch
-                    checked={settings.keyboardSOS}
-                    onCheckedChange={(checked) => saveSettings({ ...settings, keyboardSOS: checked })}
+                    checked={settings.keyboard_sos_enabled}
+                    onCheckedChange={(checked) => updateSettings({ keyboard_sos_enabled: checked })}
+                    disabled={sosLoading}
                   />
                 </div>
               </CardContent>
@@ -179,8 +163,9 @@ const Settings = () => {
                     </div>
                   </div>
                   <Switch
-                    checked={settings.autoLocation}
-                    onCheckedChange={(checked) => saveSettings({ ...settings, autoLocation: checked })}
+                    checked={settings.auto_location_enabled}
+                    onCheckedChange={(checked) => updateSettings({ auto_location_enabled: checked })}
+                    disabled={sosLoading}
                   />
                 </div>
                 <Separator />
@@ -193,8 +178,9 @@ const Settings = () => {
                     </div>
                   </div>
                   <Switch
-                    checked={settings.autoRecording}
-                    onCheckedChange={(checked) => saveSettings({ ...settings, autoRecording: checked })}
+                    checked={settings.auto_recording_enabled}
+                    onCheckedChange={(checked) => updateSettings({ auto_recording_enabled: checked })}
+                    disabled={sosLoading}
                   />
                 </div>
               </CardContent>
@@ -305,18 +291,18 @@ const Settings = () => {
                 <div className="flex items-center justify-between">
                   <p className="text-sm">Email Notifications</p>
                   <Switch
-                    checked={settings.notifications.email}
+                    checked={notifications.email}
                     onCheckedChange={(checked) => 
-                      saveSettings({ ...settings, notifications: { ...settings.notifications, email: checked } })
+                      setNotifications({ ...notifications, email: checked })
                     }
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <p className="text-sm">Push Notifications</p>
                   <Switch
-                    checked={settings.notifications.push}
+                    checked={notifications.push}
                     onCheckedChange={(checked) => 
-                      saveSettings({ ...settings, notifications: { ...settings.notifications, push: checked } })
+                      setNotifications({ ...notifications, push: checked })
                     }
                   />
                 </div>
