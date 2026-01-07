@@ -1,64 +1,60 @@
 import { useState } from 'react';
-import { Plus, Trash2, Edit2, Save, X } from 'lucide-react';
+import { Plus, Trash2, Edit2, Save, X, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { useSOS } from '@/contexts/SOSContext';
 import { toast } from 'sonner';
+import { Badge } from '@/components/ui/badge';
 
 const PrewrittenMessagesManager = () => {
-  const { prewrittenMessages, setPrewrittenMessages } = useSOS();
+  const { prewrittenMessages, addPrewrittenMessage, updatePrewrittenMessage, deletePrewrittenMessage, loading } = useSOS();
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editLabel, setEditLabel] = useState('');
   const [editMessage, setEditMessage] = useState('');
   const [isAdding, setIsAdding] = useState(false);
-  const [newLabel, setNewLabel] = useState('');
   const [newMessage, setNewMessage] = useState('');
+  const [saving, setSaving] = useState(false);
 
-  const startEdit = (id: string, label: string, message: string) => {
+  const startEdit = (id: string, message: string) => {
     setEditingId(id);
-    setEditLabel(label);
     setEditMessage(message);
   };
 
-  const saveEdit = () => {
-    if (!editLabel.trim() || !editMessage.trim()) {
-      toast.error('Please fill in all fields');
+  const saveEdit = async () => {
+    if (!editMessage.trim()) {
+      toast.error('Please enter a message');
       return;
     }
     
-    const updated = prewrittenMessages.map(m =>
-      m.id === editingId ? { ...m, label: editLabel, message: editMessage } : m
-    );
-    setPrewrittenMessages(updated);
+    setSaving(true);
+    await updatePrewrittenMessage(editingId!, editMessage);
     setEditingId(null);
+    setSaving(false);
     toast.success('Message updated');
   };
 
-  const deleteMessage = (id: string) => {
-    const updated = prewrittenMessages.filter(m => m.id !== id);
-    setPrewrittenMessages(updated);
+  const handleDelete = async (id: string) => {
+    await deletePrewrittenMessage(id);
     toast.success('Message deleted');
   };
 
-  const addMessage = () => {
-    if (!newLabel.trim() || !newMessage.trim()) {
-      toast.error('Please fill in all fields');
+  const handleAdd = async () => {
+    if (!newMessage.trim()) {
+      toast.error('Please enter a message');
       return;
     }
 
-    const newMsg = {
-      id: Date.now().toString(),
-      label: newLabel,
-      message: newMessage,
-    };
-    setPrewrittenMessages([...prewrittenMessages, newMsg]);
-    setNewLabel('');
+    setSaving(true);
+    await addPrewrittenMessage(newMessage);
     setNewMessage('');
     setIsAdding(false);
+    setSaving(false);
     toast.success('Message added');
   };
+
+  if (loading) {
+    return <div className="text-center text-muted-foreground text-sm py-4">Loading messages...</div>;
+  }
 
   return (
     <div className="space-y-3">
@@ -67,12 +63,6 @@ const PrewrittenMessagesManager = () => {
           <CardContent className="pt-3 pb-3">
             {editingId === msg.id ? (
               <div className="space-y-2">
-                <Input
-                  value={editLabel}
-                  onChange={(e) => setEditLabel(e.target.value)}
-                  placeholder="Label"
-                  className="h-8 text-sm"
-                />
                 <Textarea
                   value={editMessage}
                   onChange={(e) => setEditMessage(e.target.value)}
@@ -80,7 +70,7 @@ const PrewrittenMessagesManager = () => {
                   className="text-sm min-h-[60px]"
                 />
                 <div className="flex gap-2">
-                  <Button size="sm" onClick={saveEdit} className="h-7">
+                  <Button size="sm" onClick={saveEdit} disabled={saving} className="h-7">
                     <Save className="w-3 h-3 mr-1" />
                     Save
                   </Button>
@@ -93,15 +83,22 @@ const PrewrittenMessagesManager = () => {
             ) : (
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm">{msg.label}</p>
-                  <p className="text-xs text-muted-foreground line-clamp-2">{msg.message}</p>
+                  <div className="flex items-center gap-2 mb-1">
+                    {msg.is_default && (
+                      <Badge variant="secondary" className="text-xs h-5">
+                        <Star className="w-3 h-3 mr-1" />
+                        Default
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground line-clamp-3">{msg.message}</p>
                 </div>
                 <div className="flex gap-1 flex-shrink-0">
                   <Button
                     size="icon"
                     variant="ghost"
                     className="h-7 w-7"
-                    onClick={() => startEdit(msg.id, msg.label, msg.message)}
+                    onClick={() => startEdit(msg.id, msg.message)}
                   >
                     <Edit2 className="w-3 h-3" />
                   </Button>
@@ -109,7 +106,7 @@ const PrewrittenMessagesManager = () => {
                     size="icon"
                     variant="ghost"
                     className="h-7 w-7 text-destructive"
-                    onClick={() => deleteMessage(msg.id)}
+                    onClick={() => handleDelete(msg.id)}
                   >
                     <Trash2 className="w-3 h-3" />
                   </Button>
@@ -123,20 +120,14 @@ const PrewrittenMessagesManager = () => {
       {isAdding ? (
         <Card>
           <CardContent className="pt-3 pb-3 space-y-2">
-            <Input
-              value={newLabel}
-              onChange={(e) => setNewLabel(e.target.value)}
-              placeholder="Label (e.g., 'Emergency')"
-              className="h-8 text-sm"
-            />
             <Textarea
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Message text..."
+              placeholder="Enter your emergency message..."
               className="text-sm min-h-[60px]"
             />
             <div className="flex gap-2">
-              <Button size="sm" onClick={addMessage} className="h-7">
+              <Button size="sm" onClick={handleAdd} disabled={saving} className="h-7">
                 <Save className="w-3 h-3 mr-1" />
                 Add
               </Button>
